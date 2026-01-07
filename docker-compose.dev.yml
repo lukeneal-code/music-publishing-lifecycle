@@ -162,12 +162,15 @@ services:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       AUTH_SERVICE_URL: http://auth-service:8001
       WORKS_SERVICE_URL: http://works-service:8002
+      AI_SERVICE_URL: http://ai-service:8005
       ENVIRONMENT: development
       DEBUG: "true"
     depends_on:
       postgres:
         condition: service_healthy
       auth-service:
+        condition: service_started
+      ai-service:
         condition: service_started
     volumes:
       - ./services/deals/src:/app/src:ro
@@ -213,6 +216,7 @@ services:
       DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
       REDIS_URL: redis://redis:6379
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      DEALS_SERVICE_URL: http://deals-service:8003
       ENVIRONMENT: development
       DEBUG: "true"
     depends_on:

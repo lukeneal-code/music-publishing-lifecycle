@@ -245,9 +245,23 @@ export interface Deal {
   term_months?: number;
   territories: string[];
   rights_granted: string[];
+  signed_at?: string;
   created_at: string;
   updated_at: string;
   songwriter?: Songwriter;
+  works_count?: number;
+}
+
+export interface DealWork {
+  id: UUID;
+  deal_id: UUID;
+  work_id: UUID;
+  created_at: string;
+  work?: Work;
+}
+
+export interface DealWithDetails extends Deal {
+  works: DealWork[];
 }
 
 export interface DealCreate {

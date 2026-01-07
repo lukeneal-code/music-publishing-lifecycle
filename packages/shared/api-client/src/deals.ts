@@ -3,6 +3,7 @@ import type {
   DealCreate,
   DealUpdate,
   Work,
+  Songwriter,
   UUID,
   PaginatedResponse,
 } from '@musicpub/types';
@@ -14,6 +15,7 @@ export interface ListDealsParams {
   status?: string;
   songwriter_id?: UUID;
   deal_type?: string;
+  search?: string;
 }
 
 export class DealsApi {
@@ -68,5 +70,10 @@ export class DealsApi {
 
   async signDeal(dealId: UUID): Promise<Deal> {
     return this.client.post(`/deals/${dealId}/sign`);
+  }
+
+  // Songwriters (for deal creation)
+  async listSongwriters(params?: { skip?: number; limit?: number; search?: string }): Promise<Songwriter[]> {
+    return this.client.get<Songwriter[]>('/deals/songwriters/', params);
   }
 }
