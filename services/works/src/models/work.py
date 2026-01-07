@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import Optional
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import ARRAY, Date, DateTime, Integer, Numeric, String, Text, func
+from sqlalchemy import ARRAY, Date, DateTime, ForeignKey, Integer, Numeric, String, Text, func
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -79,11 +79,13 @@ class WorkWriter(Base):
     )
     work_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
+        ForeignKey("works.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     songwriter_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
+        ForeignKey("songwriters.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -111,6 +113,7 @@ class Recording(Base):
     )
     work_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
+        ForeignKey("works.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )

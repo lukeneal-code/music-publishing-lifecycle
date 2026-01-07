@@ -6,11 +6,11 @@
 -- ============================================
 -- Password: "password123" (bcrypt hashed)
 INSERT INTO users (id, email, password_hash, role, is_active) VALUES
-    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@musicpub.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4/rO0p.oqg/mJXvG', 'admin', true),
-    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'manager@musicpub.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4/rO0p.oqg/mJXvG', 'manager', true),
-    ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'analyst@musicpub.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4/rO0p.oqg/mJXvG', 'analyst', true),
-    ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'songwriter1@email.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4/rO0p.oqg/mJXvG', 'songwriter', true),
-    ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'songwriter2@email.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/X4/rO0p.oqg/mJXvG', 'songwriter', true)
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'admin@musicpub.com', '$2b$12$YQ.Y7ED15P3QrdH7mZoKsuND7c3p23NUqLNhbKbKRN5VBVZy2Nj.a', 'admin', true),
+    ('b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', 'manager@musicpub.com', '$2b$12$YQ.Y7ED15P3QrdH7mZoKsuND7c3p23NUqLNhbKbKRN5VBVZy2Nj.a', 'manager', true),
+    ('c0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13', 'analyst@musicpub.com', '$2b$12$YQ.Y7ED15P3QrdH7mZoKsuND7c3p23NUqLNhbKbKRN5VBVZy2Nj.a', 'analyst', true),
+    ('d0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14', 'songwriter1@email.com', '$2b$12$YQ.Y7ED15P3QrdH7mZoKsuND7c3p23NUqLNhbKbKRN5VBVZy2Nj.a', 'songwriter', true),
+    ('e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', 'songwriter2@email.com', '$2b$12$YQ.Y7ED15P3QrdH7mZoKsuND7c3p23NUqLNhbKbKRN5VBVZy2Nj.a', 'songwriter', true)
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================

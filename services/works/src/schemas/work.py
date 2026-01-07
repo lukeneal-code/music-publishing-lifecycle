@@ -66,7 +66,7 @@ class RecordingCreate(BaseModel):
     duration_seconds: Optional[int] = None
     release_date: Optional[date] = None
     label: Optional[str] = Field(None, max_length=255)
-    metadata: Optional[dict] = {}
+    extra_data: Optional[dict] = Field(default_factory=dict)
 
 
 class RecordingUpdate(BaseModel):
@@ -79,7 +79,7 @@ class RecordingUpdate(BaseModel):
     duration_seconds: Optional[int] = None
     release_date: Optional[date] = None
     label: Optional[str] = Field(None, max_length=255)
-    metadata: Optional[dict] = None
+    extra_data: Optional[dict] = None
 
 
 class RecordingResponse(BaseModel):
@@ -94,7 +94,7 @@ class RecordingResponse(BaseModel):
     duration_seconds: Optional[int] = None
     release_date: Optional[date] = None
     label: Optional[str] = None
-    metadata: dict = {}
+    extra_data: dict = Field(default_factory=dict)
     created_at: datetime
 
     class Config:
@@ -117,7 +117,7 @@ class WorkBase(BaseModel):
     release_date: Optional[date] = None
     duration_seconds: Optional[int] = None
     lyrics: Optional[str] = None
-    metadata: Optional[dict] = {}
+    extra_data: Optional[dict] = Field(default_factory=dict)
 
 
 class WorkCreate(WorkBase):
@@ -137,7 +137,7 @@ class WorkUpdate(BaseModel):
     release_date: Optional[date] = None
     duration_seconds: Optional[int] = None
     lyrics: Optional[str] = None
-    metadata: Optional[dict] = None
+    extra_data: Optional[dict] = None
     status: Optional[Literal["active", "inactive", "disputed"]] = None
 
 
@@ -153,7 +153,7 @@ class WorkResponse(BaseModel):
     release_date: Optional[date] = None
     duration_seconds: Optional[int] = None
     status: str
-    metadata: dict = {}
+    extra_data: dict = Field(default_factory=dict)
     created_at: datetime
     updated_at: datetime
     recordings_count: int = 0
