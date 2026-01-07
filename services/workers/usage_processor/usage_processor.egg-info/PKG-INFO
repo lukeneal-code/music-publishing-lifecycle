@@ -1,0 +1,12 @@
+Metadata-Version: 2.4
+Name: usage-processor
+Version: 0.1.0
+Summary: Kafka consumer for processing usage data from streaming platforms
+Requires-Python: >=3.11
+Requires-Dist: aiokafka>=0.10.0
+Requires-Dist: sqlalchemy[asyncio]>=2.0.25
+Requires-Dist: asyncpg>=0.29.0
+Requires-Dist: pydantic>=2.5.0
+Requires-Dist: pydantic-settings>=2.1.0
+Requires-Dist: httpx>=0.26.0
+Requires-Dist: openai>=1.10.0

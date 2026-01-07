@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import settings
-from src.routers import contracts_router
+from src.routers import contracts_router, usage_router
 
 app = FastAPI(
     title="AI Service",
@@ -21,6 +21,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(contracts_router)
+app.include_router(usage_router)
 
 
 @app.get("/health")

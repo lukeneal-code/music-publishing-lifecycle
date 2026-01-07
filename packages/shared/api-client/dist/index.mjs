@@ -254,11 +254,34 @@ var RoyaltiesApi = class {
     return this.client.get(`/songwriters/${songwriterId}/works/top`, { limit });
   }
 };
+
+// src/usage.ts
+var UsageApi = class {
+  constructor(client) {
+    this.client = client;
+  }
+  async ingestUsage(request) {
+    return this.client.post("usage/ingest", request);
+  }
+  async listUnmatched(params) {
+    return this.client.get("usage/unmatched", params);
+  }
+  async getUsageEvent(eventId) {
+    return this.client.get(`usage/${eventId}`);
+  }
+  async manualMatch(request) {
+    return this.client.post("usage/manual-match", request);
+  }
+  async getStats() {
+    return this.client.get("usage/stats");
+  }
+};
 export {
   ApiClient,
   AuthApi,
   DealsApi,
   RoyaltiesApi,
+  UsageApi,
   WorksApi,
   createApiClient
 };

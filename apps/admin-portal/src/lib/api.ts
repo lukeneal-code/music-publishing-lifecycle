@@ -1,4 +1,4 @@
-import { ApiClient, AuthApi, WorksApi, DealsApi, RoyaltiesApi } from '@musicpub/api-client';
+import { ApiClient, AuthApi, WorksApi, DealsApi, RoyaltiesApi, UsageApi } from '@musicpub/api-client';
 import { useAuthStore } from '@/stores/auth';
 
 // Create API client with auth handling
@@ -36,6 +36,13 @@ export const dealsApi = new DealsApi(
 export const royaltiesApi = new RoyaltiesApi(
   new ApiClient({
     baseUrl: '/api/royalties',
+    getAccessToken: () => useAuthStore.getState().accessToken,
+  })
+);
+
+export const usageApi = new UsageApi(
+  new ApiClient({
+    baseUrl: '/api/ai',
     getAccessToken: () => useAuthStore.getState().accessToken,
   })
 );

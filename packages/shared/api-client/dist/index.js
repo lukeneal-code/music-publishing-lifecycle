@@ -34,6 +34,7 @@ __export(index_exports, {
   AuthApi: () => AuthApi,
   DealsApi: () => DealsApi,
   RoyaltiesApi: () => RoyaltiesApi,
+  UsageApi: () => UsageApi,
   WorksApi: () => WorksApi,
   createApiClient: () => createApiClient
 });
@@ -295,12 +296,35 @@ var RoyaltiesApi = class {
     return this.client.get(`/songwriters/${songwriterId}/works/top`, { limit });
   }
 };
+
+// src/usage.ts
+var UsageApi = class {
+  constructor(client) {
+    this.client = client;
+  }
+  async ingestUsage(request) {
+    return this.client.post("usage/ingest", request);
+  }
+  async listUnmatched(params) {
+    return this.client.get("usage/unmatched", params);
+  }
+  async getUsageEvent(eventId) {
+    return this.client.get(`usage/${eventId}`);
+  }
+  async manualMatch(request) {
+    return this.client.post("usage/manual-match", request);
+  }
+  async getStats() {
+    return this.client.get("usage/stats");
+  }
+};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ApiClient,
   AuthApi,
   DealsApi,
   RoyaltiesApi,
+  UsageApi,
   WorksApi,
   createApiClient
 });

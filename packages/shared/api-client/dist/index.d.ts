@@ -136,4 +136,84 @@ declare class RoyaltiesApi {
     getTopPerformingWorks(songwriterId: UUID, limit?: number): Promise<TopPerformingWork[]>;
 }
 
-export { ApiClient, type ApiClientConfig, AuthApi, DealsApi, RoyaltiesApi, WorksApi, createApiClient };
+interface RawUsageEvent {
+    source_event_id?: string;
+    isrc?: string;
+    title?: string;
+    artist?: string;
+    album?: string;
+    usage_type?: string;
+    play_count?: number;
+    revenue_amount?: number;
+    currency?: string;
+    territory?: string;
+    usage_date: string;
+    reporting_period?: string;
+}
+interface UsageIngestRequest {
+    events: RawUsageEvent[];
+    source: string;
+}
+interface UsageIngestResponse {
+    message: string;
+    events_received: number;
+    events_queued: number;
+}
+interface UsageEvent {
+    id: string;
+    source: string;
+    isrc?: string;
+    reported_title?: string;
+    reported_artist?: string;
+    usage_type: string;
+    play_count: number;
+    revenue_amount?: number;
+    territory?: string;
+    usage_date: string;
+    processing_status: string;
+    ingested_at: string;
+}
+interface UnmatchedListResponse {
+    items: UsageEvent[];
+    total: number;
+    skip: number;
+    limit: number;
+}
+interface ManualMatchRequest {
+    usage_event_id: string;
+    work_id: string;
+    recording_id?: string;
+}
+interface ManualMatchResponse {
+    message: string;
+    usage_event_id: string;
+    work_id: string;
+    match_method: string;
+}
+interface UsageStats {
+    total_events: number;
+    matched_count: number;
+    unmatched_count: number;
+    pending_count: number;
+    error_count: number;
+    match_rate: number;
+    by_source: Record<string, number>;
+    by_status: Record<string, number>;
+}
+interface ListUnmatchedParams {
+    skip?: number;
+    limit?: number;
+    source?: string;
+    territory?: string;
+}
+declare class UsageApi {
+    private client;
+    constructor(client: ApiClient);
+    ingestUsage(request: UsageIngestRequest): Promise<UsageIngestResponse>;
+    listUnmatched(params?: ListUnmatchedParams): Promise<UnmatchedListResponse>;
+    getUsageEvent(eventId: string): Promise<UsageEvent>;
+    manualMatch(request: ManualMatchRequest): Promise<ManualMatchResponse>;
+    getStats(): Promise<UsageStats>;
+}
+
+export { ApiClient, type ApiClientConfig, AuthApi, DealsApi, type ListUnmatchedParams, type ManualMatchRequest, type ManualMatchResponse, type RawUsageEvent, RoyaltiesApi, type UnmatchedListResponse, UsageApi, type UsageEvent, type UsageIngestRequest, type UsageIngestResponse, type UsageStats, WorksApi, createApiClient };

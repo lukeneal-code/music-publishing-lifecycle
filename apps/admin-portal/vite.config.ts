@@ -32,6 +32,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/royalties/, ''),
       },
+      '/api/ai': {
+        target: 'http://localhost:8005',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+      },
     },
   },
 });

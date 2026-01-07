@@ -7,6 +7,7 @@ import {
   Users,
   Settings,
   LogOut,
+  BarChart3,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -14,8 +15,9 @@ const navItems = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', color: 'text-notion-purple-text' },
   { to: '/works', icon: Music, label: 'Works', color: 'text-notion-purple-text' },
   { to: '/deals', icon: FileText, label: 'Deals', color: 'text-notion-blue-text' },
+  { to: '/usage', icon: BarChart3, label: 'Usage', color: 'text-notion-orange-text' },
   { to: '/royalties', icon: DollarSign, label: 'Royalties', color: 'text-notion-green-text' },
-  { to: '/songwriters', icon: Users, label: 'Songwriters', color: 'text-notion-orange-text' },
+  { to: '/songwriters', icon: Users, label: 'Songwriters', color: 'text-notion-yellow-text' },
   { to: '/settings', icon: Settings, label: 'Settings', color: 'text-notion-gray-text' },
 ];
 
