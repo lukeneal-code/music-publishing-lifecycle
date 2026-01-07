@@ -22,58 +22,58 @@ export class DealsApi {
   constructor(private client: ApiClient) {}
 
   async listDeals(params?: ListDealsParams): Promise<PaginatedResponse<Deal>> {
-    return this.client.get<PaginatedResponse<Deal>>('/deals', params);
+    return this.client.get<PaginatedResponse<Deal>>('deals', params);
   }
 
   async getDeal(id: UUID): Promise<Deal> {
-    return this.client.get<Deal>(`/deals/${id}`);
+    return this.client.get<Deal>(`deals/${id}`);
   }
 
   async createDeal(data: DealCreate): Promise<Deal> {
-    return this.client.post<Deal>('/deals', data);
+    return this.client.post<Deal>('deals', data);
   }
 
   async updateDeal(id: UUID, data: DealUpdate): Promise<Deal> {
-    return this.client.put<Deal>(`/deals/${id}`, data);
+    return this.client.put<Deal>(`deals/${id}`, data);
   }
 
   async deleteDeal(id: UUID): Promise<void> {
-    return this.client.delete(`/deals/${id}`);
+    return this.client.delete(`deals/${id}`);
   }
 
   // Deal Works
   async getDealWorks(dealId: UUID): Promise<Work[]> {
-    return this.client.get<Work[]>(`/deals/${dealId}/works`);
+    return this.client.get<Work[]>(`deals/${dealId}/works`);
   }
 
   async addWorkToDeal(dealId: UUID, workId: UUID): Promise<void> {
-    return this.client.post(`/deals/${dealId}/works`, { work_id: workId });
+    return this.client.post(`deals/${dealId}/works`, { work_id: workId });
   }
 
   async removeWorkFromDeal(dealId: UUID, workId: UUID): Promise<void> {
-    return this.client.delete(`/deals/${dealId}/works/${workId}`);
+    return this.client.delete(`deals/${dealId}/works/${workId}`);
   }
 
   // Songwriter deals
   async getSongwriterDeals(songwriterId: UUID): Promise<Deal[]> {
-    return this.client.get<Deal[]>(`/songwriters/${songwriterId}/deals`);
+    return this.client.get<Deal[]>(`songwriters/${songwriterId}/deals`);
   }
 
   // Contract generation
-  async generateContract(dealId: UUID): Promise<{ contract_url: string }> {
-    return this.client.post(`/deals/${dealId}/generate-contract`);
+  async generateContract(dealId: UUID): Promise<{ content: string; contract_url?: string; suggested_special_terms?: string[] }> {
+    return this.client.post(`deals/${dealId}/generate-contract`);
   }
 
   async getContract(dealId: UUID): Promise<{ content: string; url?: string }> {
-    return this.client.get(`/deals/${dealId}/contract`);
+    return this.client.get(`deals/${dealId}/contract`);
   }
 
   async signDeal(dealId: UUID): Promise<Deal> {
-    return this.client.post(`/deals/${dealId}/sign`);
+    return this.client.post(`deals/${dealId}/sign`);
   }
 
   // Songwriters (for deal creation)
   async listSongwriters(params?: { skip?: number; limit?: number; search?: string }): Promise<Songwriter[]> {
-    return this.client.get<Songwriter[]>('/deals/songwriters/', params);
+    return this.client.get<Songwriter[]>('deals/songwriters/', params);
   }
 }

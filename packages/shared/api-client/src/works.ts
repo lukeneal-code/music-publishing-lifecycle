@@ -27,64 +27,64 @@ export class WorksApi {
 
   // Works
   async listWorks(params?: ListWorksParams): Promise<WorkListResponse> {
-    return this.client.get<WorkListResponse>('/works', params);
+    return this.client.get<WorkListResponse>('works', params);
   }
 
   async searchWorks(query: string, params?: { skip?: number; limit?: number }): Promise<WorkListResponse> {
-    return this.client.get<WorkListResponse>('/works/search', { q: query, ...params });
+    return this.client.get<WorkListResponse>('works/search', { q: query, ...params });
   }
 
   async searchSimilar(request: SimilarSearchRequest): Promise<Work[]> {
-    return this.client.post<Work[]>('/works/search/similar', request);
+    return this.client.post<Work[]>('works/search/similar', request);
   }
 
   async getWork(id: UUID): Promise<WorkWithDetails> {
-    return this.client.get<WorkWithDetails>(`/works/${id}`);
+    return this.client.get<WorkWithDetails>(`works/${id}`);
   }
 
   async createWork(data: WorkCreate): Promise<Work> {
-    return this.client.post<Work>('/works', data);
+    return this.client.post<Work>('works', data);
   }
 
   async updateWork(id: UUID, data: WorkUpdate): Promise<Work> {
-    return this.client.put<Work>(`/works/${id}`, data);
+    return this.client.put<Work>(`works/${id}`, data);
   }
 
   async deleteWork(id: UUID): Promise<void> {
-    return this.client.delete(`/works/${id}`);
+    return this.client.delete(`works/${id}`);
   }
 
   // Recordings
   async getWorkRecordings(workId: UUID): Promise<Recording[]> {
-    return this.client.get<Recording[]>(`/works/${workId}/recordings`);
+    return this.client.get<Recording[]>(`works/${workId}/recordings`);
   }
 
   async createRecording(workId: UUID, data: RecordingCreate): Promise<Recording> {
-    return this.client.post<Recording>(`/works/${workId}/recordings`, data);
+    return this.client.post<Recording>(`works/${workId}/recordings`, data);
   }
 
   async getRecording(workId: UUID, recordingId: UUID): Promise<Recording> {
-    return this.client.get<Recording>(`/works/${workId}/recordings/${recordingId}`);
+    return this.client.get<Recording>(`works/${workId}/recordings/${recordingId}`);
   }
 
   async updateRecording(workId: UUID, recordingId: UUID, data: RecordingUpdate): Promise<Recording> {
-    return this.client.put<Recording>(`/works/${workId}/recordings/${recordingId}`, data);
+    return this.client.put<Recording>(`works/${workId}/recordings/${recordingId}`, data);
   }
 
   async deleteRecording(workId: UUID, recordingId: UUID): Promise<void> {
-    return this.client.delete(`/works/${workId}/recordings/${recordingId}`);
+    return this.client.delete(`works/${workId}/recordings/${recordingId}`);
   }
 
   // Writers
   async getWorkWriters(workId: UUID): Promise<WorkWriter[]> {
-    return this.client.get<WorkWriter[]>(`/works/${workId}/writers`);
+    return this.client.get<WorkWriter[]>(`works/${workId}/writers`);
   }
 
   async addWorkWriter(workId: UUID, data: WorkWriterCreate): Promise<WorkWriter> {
-    return this.client.post<WorkWriter>(`/works/${workId}/writers`, data);
+    return this.client.post<WorkWriter>(`works/${workId}/writers`, data);
   }
 
   async removeWorkWriter(workId: UUID, songwriterId: UUID): Promise<void> {
-    return this.client.delete(`/works/${workId}/writers/${songwriterId}`);
+    return this.client.delete(`works/${workId}/writers/${songwriterId}`);
   }
 }

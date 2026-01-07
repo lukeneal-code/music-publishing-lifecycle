@@ -91,15 +91,13 @@ class Deal(Base):
     contract_embedding = mapped_column(Vector(1536), nullable=True)
     special_terms: Mapped[dict] = mapped_column(JSONB, default=dict)
 
-    # Audit Trail
+    # Audit Trail (no FK - users table is in auth service)
     created_by: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("users.id"),
         nullable=True,
     )
     approved_by: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("users.id"),
         nullable=True,
     )
     signed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)

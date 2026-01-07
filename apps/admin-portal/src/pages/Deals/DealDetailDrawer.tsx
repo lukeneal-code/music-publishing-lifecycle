@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { X, FileText, User, Music, Calendar, DollarSign, Globe, CheckCircle } from 'lucide-react';
+import { X, FileText, User, Music, Calendar, DollarSign, Globe, CheckCircle, ScrollText, Loader2 } from 'lucide-react';
 import type { Deal } from '@musicpub/types';
 import { dealsApi } from '@/lib/api';
 import { formatDate, formatCurrency } from '@/lib/utils';
@@ -31,6 +32,9 @@ const dealTypeLabels: Record<string, string> = {
 
 export function DealDetailDrawer({ deal, isOpen, onClose }: DealDetailDrawerProps) {
   const queryClient = useQueryClient();
+  const [showContract, setShowContract] = useState(false);
+  const [contractContent, setContractContent] = useState<string | null>(null);
+  const [suggestedTerms, setSuggestedTerms] = useState<string[]>([]);
 
   const { data: dealDetails, isLoading } = useQuery({
     queryKey: ['deal', deal?.id],
@@ -43,6 +47,15 @@ export function DealDetailDrawer({ deal, isOpen, onClose }: DealDetailDrawerProp
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['deal', deal?.id] });
       queryClient.invalidateQueries({ queryKey: ['deals'] });
+    },
+  });
+
+  const contractMutation = useMutation({
+    mutationFn: () => dealsApi.generateContract(deal!.id),
+    onSuccess: (data: { content?: string; contract_url?: string; suggested_special_terms?: string[] }) => {
+      setContractContent(data.content || null);
+      setSuggestedTerms(data.suggested_special_terms || []);
+      setShowContract(true);
     },
   });
 
@@ -243,6 +256,38 @@ export function DealDetailDrawer({ deal, isOpen, onClose }: DealDetailDrawerProp
               )}
             </div>
 
+            {/* Contract */}
+            <div>
+              <h4 className="text-xs font-medium text-notion-text mb-3 flex items-center gap-2">
+                <ScrollText className="w-3.5 h-3.5 text-notion-text-tertiary" />
+                Contract
+              </h4>
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => contractMutation.mutate()}
+                disabled={contractMutation.isPending}
+                className="w-full"
+              >
+                {contractMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 mr-1.5 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <ScrollText className="w-3.5 h-3.5 mr-1.5" />
+                    Generate Contract
+                  </>
+                )}
+              </Button>
+              {contractMutation.isError && (
+                <p className="text-xs text-notion-red-text mt-2">
+                  Failed to generate contract. Please try again.
+                </p>
+              )}
+            </div>
+
             {/* Metadata */}
             <div>
               <h4 className="text-xs font-medium text-notion-text mb-3">Additional Information</h4>
@@ -262,6 +307,71 @@ export function DealDetailDrawer({ deal, isOpen, onClose }: DealDetailDrawerProp
           <div className="p-4 text-center text-xs text-notion-text-secondary">Deal not found</div>
         )}
       </div>
+
+      {/* Contract Modal */}
+      {showContract && (
+        <>
+          <div
+            className="fixed inset-0 bg-black/50 z-[60]"
+            onClick={() => setShowContract(false)}
+          />
+          <div className="fixed inset-4 md:inset-8 lg:inset-16 bg-white rounded-notion-lg shadow-notion-popup z-[70] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-notion-border-light">
+              <div>
+                <h2 className="text-base font-semibold text-notion-text">Generated Contract</h2>
+                <p className="text-xs text-notion-text-tertiary mt-0.5">
+                  {dealDetails?.deal_number} - {dealTypeLabels[dealDetails?.deal_type || ''] || dealDetails?.deal_type}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowContract(false)}
+                className="p-2 rounded-notion text-notion-text-tertiary hover:bg-notion-bg-hover hover:text-notion-text-secondary transition-colors duration-100"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 overflow-auto p-6">
+              {suggestedTerms.length > 0 && (
+                <div className="mb-6 p-4 bg-notion-blue-bg rounded-notion-md">
+                  <h3 className="text-xs font-semibold text-notion-blue-text mb-2">
+                    AI-Suggested Additional Terms
+                  </h3>
+                  <ul className="space-y-1">
+                    {suggestedTerms.map((term, index) => (
+                      <li key={index} className="text-xs text-notion-blue-text">
+                        {term}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              <pre className="whitespace-pre-wrap font-mono text-xs text-notion-text leading-relaxed">
+                {contractContent}
+              </pre>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-notion-border-light">
+              <Button variant="secondary" onClick={() => setShowContract(false)}>
+                Close
+              </Button>
+              <Button
+                onClick={() => {
+                  if (contractContent) {
+                    navigator.clipboard.writeText(contractContent);
+                  }
+                }}
+              >
+                Copy to Clipboard
+              </Button>
+            </div>
+          </div>
+        </>
+      )}
     </>,
     document.body
   );

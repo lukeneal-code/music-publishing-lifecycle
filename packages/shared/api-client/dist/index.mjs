@@ -108,51 +108,51 @@ var WorksApi = class {
   }
   // Works
   async listWorks(params) {
-    return this.client.get("/works", params);
+    return this.client.get("works", params);
   }
   async searchWorks(query, params) {
-    return this.client.get("/works/search", { q: query, ...params });
+    return this.client.get("works/search", { q: query, ...params });
   }
   async searchSimilar(request) {
-    return this.client.post("/works/search/similar", request);
+    return this.client.post("works/search/similar", request);
   }
   async getWork(id) {
-    return this.client.get(`/works/${id}`);
+    return this.client.get(`works/${id}`);
   }
   async createWork(data) {
-    return this.client.post("/works", data);
+    return this.client.post("works", data);
   }
   async updateWork(id, data) {
-    return this.client.put(`/works/${id}`, data);
+    return this.client.put(`works/${id}`, data);
   }
   async deleteWork(id) {
-    return this.client.delete(`/works/${id}`);
+    return this.client.delete(`works/${id}`);
   }
   // Recordings
   async getWorkRecordings(workId) {
-    return this.client.get(`/works/${workId}/recordings`);
+    return this.client.get(`works/${workId}/recordings`);
   }
   async createRecording(workId, data) {
-    return this.client.post(`/works/${workId}/recordings`, data);
+    return this.client.post(`works/${workId}/recordings`, data);
   }
   async getRecording(workId, recordingId) {
-    return this.client.get(`/works/${workId}/recordings/${recordingId}`);
+    return this.client.get(`works/${workId}/recordings/${recordingId}`);
   }
   async updateRecording(workId, recordingId, data) {
-    return this.client.put(`/works/${workId}/recordings/${recordingId}`, data);
+    return this.client.put(`works/${workId}/recordings/${recordingId}`, data);
   }
   async deleteRecording(workId, recordingId) {
-    return this.client.delete(`/works/${workId}/recordings/${recordingId}`);
+    return this.client.delete(`works/${workId}/recordings/${recordingId}`);
   }
   // Writers
   async getWorkWriters(workId) {
-    return this.client.get(`/works/${workId}/writers`);
+    return this.client.get(`works/${workId}/writers`);
   }
   async addWorkWriter(workId, data) {
-    return this.client.post(`/works/${workId}/writers`, data);
+    return this.client.post(`works/${workId}/writers`, data);
   }
   async removeWorkWriter(workId, songwriterId) {
-    return this.client.delete(`/works/${workId}/writers/${songwriterId}`);
+    return this.client.delete(`works/${workId}/writers/${songwriterId}`);
   }
 };
 
@@ -162,43 +162,47 @@ var DealsApi = class {
     this.client = client;
   }
   async listDeals(params) {
-    return this.client.get("/deals", params);
+    return this.client.get("deals", params);
   }
   async getDeal(id) {
-    return this.client.get(`/deals/${id}`);
+    return this.client.get(`deals/${id}`);
   }
   async createDeal(data) {
-    return this.client.post("/deals", data);
+    return this.client.post("deals", data);
   }
   async updateDeal(id, data) {
-    return this.client.put(`/deals/${id}`, data);
+    return this.client.put(`deals/${id}`, data);
   }
   async deleteDeal(id) {
-    return this.client.delete(`/deals/${id}`);
+    return this.client.delete(`deals/${id}`);
   }
   // Deal Works
   async getDealWorks(dealId) {
-    return this.client.get(`/deals/${dealId}/works`);
+    return this.client.get(`deals/${dealId}/works`);
   }
   async addWorkToDeal(dealId, workId) {
-    return this.client.post(`/deals/${dealId}/works`, { work_id: workId });
+    return this.client.post(`deals/${dealId}/works`, { work_id: workId });
   }
   async removeWorkFromDeal(dealId, workId) {
-    return this.client.delete(`/deals/${dealId}/works/${workId}`);
+    return this.client.delete(`deals/${dealId}/works/${workId}`);
   }
   // Songwriter deals
   async getSongwriterDeals(songwriterId) {
-    return this.client.get(`/songwriters/${songwriterId}/deals`);
+    return this.client.get(`songwriters/${songwriterId}/deals`);
   }
   // Contract generation
   async generateContract(dealId) {
-    return this.client.post(`/deals/${dealId}/generate-contract`);
+    return this.client.post(`deals/${dealId}/generate-contract`);
   }
   async getContract(dealId) {
-    return this.client.get(`/deals/${dealId}/contract`);
+    return this.client.get(`deals/${dealId}/contract`);
   }
   async signDeal(dealId) {
-    return this.client.post(`/deals/${dealId}/sign`);
+    return this.client.post(`deals/${dealId}/sign`);
+  }
+  // Songwriters (for deal creation)
+  async listSongwriters(params) {
+    return this.client.get("deals/songwriters/", params);
   }
 };
 

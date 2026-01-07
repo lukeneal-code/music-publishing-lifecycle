@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { LoginRequest, LoginResponse, RegisterRequest, User, TokenRefreshRequest, TokenRefreshResponse, WorkListResponse, SimilarSearchRequest, Work, UUID, WorkWithDetails, WorkCreate, WorkUpdate, Recording, RecordingCreate, RecordingUpdate, WorkWriter, WorkWriterCreate, PaginatedResponse, Deal, DealCreate, DealUpdate, RoyaltyPeriod, RoyaltyStatement, RoyaltyLineItem, RoyaltySummary, TopPerformingWork } from '@musicpub/types';
+import { LoginRequest, LoginResponse, RegisterRequest, User, TokenRefreshRequest, TokenRefreshResponse, WorkListResponse, SimilarSearchRequest, Work, UUID, WorkWithDetails, WorkCreate, WorkUpdate, Recording, RecordingCreate, RecordingUpdate, WorkWriter, WorkWriterCreate, PaginatedResponse, Deal, DealCreate, DealUpdate, Songwriter, RoyaltyPeriod, RoyaltyStatement, RoyaltyLineItem, RoyaltySummary, TopPerformingWork } from '@musicpub/types';
 
 interface ApiClientConfig {
     baseUrl: string;
@@ -73,6 +73,7 @@ interface ListDealsParams {
     status?: string;
     songwriter_id?: UUID;
     deal_type?: string;
+    search?: string;
 }
 declare class DealsApi {
     private client;
@@ -87,13 +88,20 @@ declare class DealsApi {
     removeWorkFromDeal(dealId: UUID, workId: UUID): Promise<void>;
     getSongwriterDeals(songwriterId: UUID): Promise<Deal[]>;
     generateContract(dealId: UUID): Promise<{
-        contract_url: string;
+        content: string;
+        contract_url?: string;
+        suggested_special_terms?: string[];
     }>;
     getContract(dealId: UUID): Promise<{
         content: string;
         url?: string;
     }>;
     signDeal(dealId: UUID): Promise<Deal>;
+    listSongwriters(params?: {
+        skip?: number;
+        limit?: number;
+        search?: string;
+    }): Promise<Songwriter[]>;
 }
 
 interface ListPeriodsParams {

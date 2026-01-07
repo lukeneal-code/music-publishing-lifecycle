@@ -49,41 +49,31 @@ cp .env.example .env
 ### 2. Start Infrastructure
 
 ```bash
-# Start PostgreSQL, Redis, Kafka
-make up
+# Start all services (PostgreSQL, Redis, Kafka, all microservices)
+docker-compose -f docker-compose.dev.yml up -d
 
-# Wait for services to be healthy, then run migrations
-make db-migrate
-
-# Seed with test data
-make db-seed
+# Check service health
+curl http://localhost:8001/health  # Auth
+curl http://localhost:8002/health  # Works
+curl http://localhost:8003/health  # Deals
+curl http://localhost:8005/health  # AI
 ```
 
-### 3. Start Backend Services
+### 3. Test Contract Generation
 
 ```bash
-# Start all services with Docker Compose
-make dev
-```
-
-Or run individual services:
-
-```bash
-# Auth Service (Port 8001)
-cd services/auth && pip install -e . && uvicorn src.main:app --port 8001 --reload
-
-# Works Service (Port 8002)
-cd services/works && pip install -e . && uvicorn src.main:app --port 8002 --reload
+# Generate a contract for an existing deal
+curl -X POST http://localhost:8003/deals/01eebc99-9c0b-4ef8-bb6d-6bb9bd380a51/generate-contract | jq
 ```
 
 ### 4. Start Frontend
 
 ```bash
 # Install dependencies
-npm install
+pnpm install
 
 # Start Admin Portal (Port 3000)
-npm run dev:admin
+pnpm run dev:admin
 ```
 
 ### 5. Access the Application
@@ -91,6 +81,8 @@ npm run dev:admin
 - **Admin Portal**: http://localhost:3000
 - **Auth Service API**: http://localhost:8001/docs
 - **Works Service API**: http://localhost:8002/docs
+- **Deals Service API**: http://localhost:8003/docs
+- **AI Service API**: http://localhost:8005/docs
 - **Kafka UI**: http://localhost:8080
 
 ## Project Structure
@@ -176,14 +168,26 @@ After running `make db-seed`:
 ### Phase 1: Foundation (Complete)
 - Project scaffolding
 - Database schema with pgvector
-- Auth Service
-- Works Service
-- Admin Portal scaffold
+- Auth Service (JWT authentication, user management)
+- Works Service (CRUD, recordings, writers, vector search)
+- Admin Portal scaffold with Notion-style theming
 
-### Phase 2: Deals & Contracts (Pending)
-- Deals Service
-- LangGraph Contract Generator
-- Contract Templates
+### Phase 2: Deals & Contracts (Complete)
+- **Deals Service** - Full CRUD API for publishing deals
+  - Deal management (create, update, delete, sign)
+  - Deal-works associations
+  - Songwriter lookup for deal creation
+  - Integration with AI service for contract generation
+- **AI Contract Generator** - LangGraph-powered contract creation
+  - 6 contract templates (Publishing, Co-Publishing, Administration, Sub-Publishing, Sync License, Mechanical License)
+  - Template variable substitution (songwriter, shares, dates, territories, advance)
+  - AI-suggested additional terms (accounting, audit rights, delivery requirements)
+  - Works exhibit generation
+- **Admin Portal Deals UI**
+  - Deals list with filtering (status, type) and search
+  - Create deal modal with songwriter selection and share validation
+  - Deal detail drawer with sign functionality
+  - Contract generation integration
 
 ### Phase 3: Usage Pipeline (Pending)
 - Kafka infrastructure
@@ -200,4 +204,3 @@ After running `make db-seed`:
 - AI Service consolidation
 - Notification Worker
 - Performance optimization
-# music-publishing-lifecycle
