@@ -13,22 +13,26 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled}
         className={cn(
-          'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
+          'inline-flex items-center justify-center font-medium rounded-notion transition-colors duration-100',
           {
-            // Variants
-            'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500':
+            // Primary - Notion blue style
+            'bg-notion-blue-text text-white hover:bg-[#0a5f85] active:bg-[#095274]':
               variant === 'primary',
-            'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500':
+            // Secondary - subtle border
+            'bg-white text-notion-text border border-notion-border hover:bg-notion-bg-hover active:bg-notion-bg-active':
               variant === 'secondary',
-            'text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:ring-gray-500':
+            // Ghost - no border, just hover
+            'text-notion-text-secondary hover:bg-notion-bg-hover active:bg-notion-bg-active':
               variant === 'ghost',
-            'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500': variant === 'danger',
+            // Danger - red style
+            'bg-notion-red-text text-white hover:bg-[#c73636] active:bg-[#a82e2e]':
+              variant === 'danger',
             // Sizes
-            'px-3 py-1.5 text-sm': size === 'sm',
-            'px-4 py-2 text-sm': size === 'md',
-            'px-6 py-3 text-base': size === 'lg',
+            'px-2 py-1 text-xs': size === 'sm',
+            'px-3 py-1.5 text-xs': size === 'md',
+            'px-4 py-2 text-sm': size === 'lg',
             // Disabled
-            'opacity-50 cursor-not-allowed': disabled,
+            'opacity-40 cursor-not-allowed pointer-events-none': disabled,
           },
           className
         )}

@@ -1,37 +1,45 @@
-import { Music, FileText, DollarSign, Users, TrendingUp, TrendingDown } from 'lucide-react';
+import { Music, FileText, DollarSign, Users, ArrowUpRight, ArrowDownRight, LayoutDashboard } from 'lucide-react';
 
 const stats = [
   {
     label: 'Total Works',
     value: '1,284',
     change: '+12%',
-    trend: 'up',
+    trend: 'up' as const,
     icon: Music,
-    color: 'bg-purple-100 text-purple-600',
+    iconBg: 'bg-notion-purple-bg',
+    iconColor: 'text-notion-purple-text',
+    borderColor: 'border-l-notion-purple-text',
   },
   {
     label: 'Active Deals',
     value: '156',
     change: '+8%',
-    trend: 'up',
+    trend: 'up' as const,
     icon: FileText,
-    color: 'bg-blue-100 text-blue-600',
+    iconBg: 'bg-notion-blue-bg',
+    iconColor: 'text-notion-blue-text',
+    borderColor: 'border-l-notion-blue-text',
   },
   {
     label: 'Q1 Revenue',
     value: '$847,250',
     change: '+23%',
-    trend: 'up',
+    trend: 'up' as const,
     icon: DollarSign,
-    color: 'bg-green-100 text-green-600',
+    iconBg: 'bg-notion-green-bg',
+    iconColor: 'text-notion-green-text',
+    borderColor: 'border-l-notion-green-text',
   },
   {
     label: 'Songwriters',
     value: '89',
     change: '+5%',
-    trend: 'up',
+    trend: 'up' as const,
     icon: Users,
-    color: 'bg-orange-100 text-orange-600',
+    iconBg: 'bg-notion-orange-bg',
+    iconColor: 'text-notion-orange-text',
+    borderColor: 'border-l-notion-orange-text',
   },
 ];
 
@@ -43,41 +51,61 @@ const recentActivity = [
   { type: 'work', title: 'Work "Summer Love" matched to 3 recordings', time: '2 days ago' },
 ];
 
+const getActivityDot = (type: string) => {
+  switch (type) {
+    case 'work':
+      return 'bg-notion-purple-text';
+    case 'deal':
+      return 'bg-notion-blue-text';
+    case 'royalty':
+      return 'bg-notion-green-text';
+    default:
+      return 'bg-notion-orange-text';
+  }
+};
+
 export function DashboardPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="text-gray-500">Overview of your music publishing operations</p>
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 bg-notion-purple-bg rounded-notion-md flex items-center justify-center flex-shrink-0">
+          <LayoutDashboard className="w-5 h-5 text-notion-purple-text" />
+        </div>
+        <div>
+          <h1 className="text-xl font-semibold text-notion-text">Dashboard</h1>
+          <p className="text-xs text-notion-text-secondary mt-0.5">
+            Overview of your music publishing operations
+          </p>
+        </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6"
+            className={`p-4 rounded-notion-md border border-notion-border-light border-l-2 ${stat.borderColor} hover:bg-notion-bg-hover transition-colors duration-100`}
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-                <p className="text-2xl font-semibold text-gray-900 mt-1">{stat.value}</p>
+                <p className="text-xs text-notion-text-secondary">{stat.label}</p>
+                <p className="text-lg font-semibold text-notion-text mt-1">{stat.value}</p>
               </div>
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${stat.color}`}>
-                <stat.icon className="w-6 h-6" />
+              <div className={`w-8 h-8 rounded-notion flex items-center justify-center ${stat.iconBg}`}>
+                <stat.icon className={`w-4 h-4 ${stat.iconColor}`} />
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm">
+            <div className="mt-3 flex items-center text-xs">
               {stat.trend === 'up' ? (
-                <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-notion-green-text mr-1" />
               ) : (
-                <TrendingDown className="w-4 h-4 text-red-500 mr-1" />
+                <ArrowDownRight className="w-3.5 h-3.5 text-notion-red-text mr-1" />
               )}
-              <span className={stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+              <span className={stat.trend === 'up' ? 'text-notion-green-text' : 'text-notion-red-text'}>
                 {stat.change}
               </span>
-              <span className="text-gray-500 ml-1">from last quarter</span>
+              <span className="text-notion-text-tertiary ml-1">from last quarter</span>
             </div>
           </div>
         ))}
@@ -86,28 +114,18 @@ export function DashboardPage() {
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Activity */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h2>
-          <div className="space-y-4">
+        <div>
+          <h2 className="text-sm font-semibold text-notion-text mb-4">Recent Activity</h2>
+          <div className="space-y-1">
             {recentActivity.map((activity, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0"
+                className="flex items-start gap-3 p-3 rounded-notion hover:bg-notion-bg-hover transition-colors duration-100"
               >
-                <div
-                  className={`w-2 h-2 rounded-full mt-2 ${
-                    activity.type === 'work'
-                      ? 'bg-purple-500'
-                      : activity.type === 'deal'
-                        ? 'bg-blue-500'
-                        : activity.type === 'royalty'
-                          ? 'bg-green-500'
-                          : 'bg-orange-500'
-                  }`}
-                />
-                <div>
-                  <p className="text-sm text-gray-900">{activity.title}</p>
-                  <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
+                <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${getActivityDot(activity.type)}`} />
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs text-notion-text">{activity.title}</p>
+                  <p className="text-[11px] text-notion-text-tertiary mt-0.5">{activity.time}</p>
                 </div>
               </div>
             ))}
@@ -115,28 +133,36 @@ export function DashboardPage() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <Music className="w-6 h-6 text-purple-600 mb-2" />
-              <p className="font-medium text-gray-900">Add Work</p>
-              <p className="text-sm text-gray-500">Register new composition</p>
+        <div>
+          <h2 className="text-sm font-semibold text-notion-text mb-4">Quick Actions</h2>
+          <div className="grid grid-cols-2 gap-3">
+            <button className="p-4 border border-notion-border-light rounded-notion-md hover:bg-notion-bg-hover transition-colors duration-100 text-left group">
+              <div className={`w-8 h-8 rounded-notion flex items-center justify-center bg-notion-purple-bg mb-3`}>
+                <Music className="w-4 h-4 text-notion-purple-text" />
+              </div>
+              <p className="text-xs font-medium text-notion-text">Add Work</p>
+              <p className="text-[11px] text-notion-text-tertiary mt-0.5">Register new composition</p>
             </button>
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <FileText className="w-6 h-6 text-blue-600 mb-2" />
-              <p className="font-medium text-gray-900">Create Deal</p>
-              <p className="text-sm text-gray-500">Draft new agreement</p>
+            <button className="p-4 border border-notion-border-light rounded-notion-md hover:bg-notion-bg-hover transition-colors duration-100 text-left group">
+              <div className={`w-8 h-8 rounded-notion flex items-center justify-center bg-notion-blue-bg mb-3`}>
+                <FileText className="w-4 h-4 text-notion-blue-text" />
+              </div>
+              <p className="text-xs font-medium text-notion-text">Create Deal</p>
+              <p className="text-[11px] text-notion-text-tertiary mt-0.5">Draft new agreement</p>
             </button>
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <DollarSign className="w-6 h-6 text-green-600 mb-2" />
-              <p className="font-medium text-gray-900">Calculate Royalties</p>
-              <p className="text-sm text-gray-500">Run period calculation</p>
+            <button className="p-4 border border-notion-border-light rounded-notion-md hover:bg-notion-bg-hover transition-colors duration-100 text-left group">
+              <div className={`w-8 h-8 rounded-notion flex items-center justify-center bg-notion-green-bg mb-3`}>
+                <DollarSign className="w-4 h-4 text-notion-green-text" />
+              </div>
+              <p className="text-xs font-medium text-notion-text">Calculate Royalties</p>
+              <p className="text-[11px] text-notion-text-tertiary mt-0.5">Run period calculation</p>
             </button>
-            <button className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-left">
-              <Users className="w-6 h-6 text-orange-600 mb-2" />
-              <p className="font-medium text-gray-900">Add Songwriter</p>
-              <p className="text-sm text-gray-500">Register new writer</p>
+            <button className="p-4 border border-notion-border-light rounded-notion-md hover:bg-notion-bg-hover transition-colors duration-100 text-left group">
+              <div className={`w-8 h-8 rounded-notion flex items-center justify-center bg-notion-orange-bg mb-3`}>
+                <Users className="w-4 h-4 text-notion-orange-text" />
+              </div>
+              <p className="text-xs font-medium text-notion-text">Add Songwriter</p>
+              <p className="text-[11px] text-notion-text-tertiary mt-0.5">Register new writer</p>
             </button>
           </div>
         </div>

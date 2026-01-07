@@ -29,12 +29,12 @@ export function DataTable<T extends { id: string }>({
 }: DataTableProps<T>) {
   if (isLoading) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="rounded-notion-md overflow-hidden">
         <div className="animate-pulse">
-          <div className="h-12 bg-gray-100 border-b border-gray-200" />
+          <div className="h-9 bg-notion-bg-secondary border-b border-notion-border" />
           {[...Array(5)].map((_, i) => (
-            <div key={i} className="h-16 border-b border-gray-100 px-6 py-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4" />
+            <div key={i} className="h-12 border-b border-notion-border-light px-4 py-3">
+              <div className="h-3 bg-notion-bg-tertiary rounded w-3/4" />
             </div>
           ))}
         </div>
@@ -44,23 +44,23 @@ export function DataTable<T extends { id: string }>({
 
   if (data.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8 text-center">
-        <p className="text-gray-500">No data found</p>
+      <div className="py-12 text-center">
+        <p className="text-xs text-notion-text-secondary">No results found</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div>
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
+            <tr className="border-b border-notion-border">
               {columns.map((column) => (
                 <th
                   key={column.key}
                   className={cn(
-                    'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                    'px-3 py-2 text-left text-[11px] font-medium text-notion-text-secondary uppercase tracking-wider',
                     column.className
                   )}
                 >
@@ -69,20 +69,20 @@ export function DataTable<T extends { id: string }>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody>
             {data.map((item) => (
               <tr
                 key={item.id}
                 onClick={() => onRowClick?.(item)}
                 className={cn(
-                  'hover:bg-gray-50 transition-colors',
-                  onRowClick && 'cursor-pointer'
+                  'border-b border-notion-border-light transition-colors duration-100',
+                  onRowClick && 'cursor-pointer hover:bg-notion-bg-hover'
                 )}
               >
                 {columns.map((column) => (
                   <td
                     key={column.key}
-                    className={cn('px-6 py-4 whitespace-nowrap', column.className)}
+                    className={cn('px-3 py-2.5', column.className)}
                   >
                     {column.cell(item)}
                   </td>
@@ -94,22 +94,22 @@ export function DataTable<T extends { id: string }>({
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <div className="px-6 py-3 border-t border-gray-200 flex items-center justify-between">
-          <span className="text-sm text-gray-500">
+        <div className="px-3 py-3 flex items-center justify-between border-t border-notion-border-light">
+          <span className="text-xs text-notion-text-secondary">
             Page {pagination.page} of {pagination.totalPages}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => pagination.onPageChange(pagination.page - 1)}
               disabled={pagination.page <= 1}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 rounded-notion text-notion-text-secondary hover:bg-notion-bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-100"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => pagination.onPageChange(pagination.page + 1)}
               disabled={pagination.page >= pagination.totalPages}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-1.5 rounded-notion text-notion-text-secondary hover:bg-notion-bg-hover disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-100"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
