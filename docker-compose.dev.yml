@@ -1,0 +1,284 @@
+version: '3.8'
+
+services:
+  # ============================================
+  # INFRASTRUCTURE
+  # ============================================
+
+  # PostgreSQL with pgvector
+  postgres:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-musicpub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-musicpub_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-musicpub}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./db/migrations:/docker-entrypoint-initdb.d/migrations
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U musicpub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - musicpub-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - musicpub-network
+
+  # Zookeeper (for Kafka)
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_log:/var/lib/zookeeper/log
+    networks:
+      - musicpub-network
+
+  # Kafka
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - musicpub-network
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    depends_on:
+      - kafka
+    networks:
+      - musicpub-network
+
+  # ============================================
+  # BACKEND SERVICES
+  # ============================================
+
+  # Auth Service
+  auth-service:
+    build:
+      context: ./services/auth
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_change_in_production}
+      JWT_ALGORITHM: HS256
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/auth/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+  # Works Service
+  works-service:
+    build:
+      context: ./services/works
+      dockerfile: Dockerfile
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AUTH_SERVICE_URL: http://auth-service:8001
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./services/works/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+  # Deals Service
+  deals-service:
+    build:
+      context: ./services/deals
+      dockerfile: Dockerfile
+    ports:
+      - "8003:8003"
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AUTH_SERVICE_URL: http://auth-service:8001
+      WORKS_SERVICE_URL: http://works-service:8002
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./services/deals/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+  # Royalties Service
+  royalties-service:
+    build:
+      context: ./services/royalties
+      dockerfile: Dockerfile
+    ports:
+      - "8004:8004"
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:29092
+      AUTH_SERVICE_URL: http://auth-service:8001
+      WORKS_SERVICE_URL: http://works-service:8002
+      DEALS_SERVICE_URL: http://deals-service:8003
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+    volumes:
+      - ./services/royalties/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+  # AI Service
+  ai-service:
+    build:
+      context: ./services/ai
+      dockerfile: Dockerfile
+    ports:
+      - "8005:8005"
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      REDIS_URL: redis://redis:6379
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./services/ai/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+  # ============================================
+  # WORKERS
+  # ============================================
+
+  # Usage Processor Worker
+  usage-processor:
+    build:
+      context: ./services/workers/usage_processor
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      KAFKA_BROKERS: kafka:29092
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    volumes:
+      - ./services/workers/usage_processor/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+  # Matching Worker
+  matching-worker:
+    build:
+      context: ./services/workers/matching_worker
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
+      KAFKA_BROKERS: kafka:29092
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AI_SERVICE_URL: http://ai-service:8005
+      ENVIRONMENT: development
+      DEBUG: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+    volumes:
+      - ./services/workers/matching_worker/src:/app/src:ro
+    networks:
+      - musicpub-network
+
+networks:
+  musicpub-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  zookeeper_data:
+  zookeeper_log:
+  kafka_data:
