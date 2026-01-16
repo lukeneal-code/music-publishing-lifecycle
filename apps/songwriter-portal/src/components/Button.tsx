@@ -2,7 +2,7 @@ import { forwardRef } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'gradient';
   size?: 'sm' | 'md' | 'lg';
 }
 
@@ -13,17 +13,25 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled}
         className={cn(
-          'inline-flex items-center justify-center font-medium rounded-notion transition-colors duration-100',
+          'inline-flex items-center justify-center font-medium rounded-studio transition-all duration-200',
           {
-            'bg-notion-blue-text text-white hover:bg-[#0a5f85] active:bg-[#095274]':
+            // Primary - solid indigo with glow
+            'bg-accent-indigo text-white hover:bg-accent-violet shadow-glow-sm hover:shadow-glow-md active:scale-[0.98]':
               variant === 'primary',
-            'bg-white text-notion-text border border-notion-border hover:bg-notion-bg-hover active:bg-notion-bg-active':
+            // Secondary - outlined with subtle fill
+            'bg-studio-surface text-text-primary border border-studio-border hover:bg-studio-surface-hover hover:border-studio-border active:scale-[0.98]':
               variant === 'secondary',
-            'text-notion-text-secondary hover:bg-notion-bg-hover active:bg-notion-bg-active':
+            // Ghost - minimal, just text
+            'text-text-secondary hover:text-text-primary hover:bg-studio-surface-hover active:bg-studio-surface':
               variant === 'ghost',
-            'px-2 py-1 text-xs': size === 'sm',
-            'px-3 py-1.5 text-xs': size === 'md',
-            'px-4 py-2 text-sm': size === 'lg',
+            // Gradient - full gradient with glow
+            'gradient-primary text-white shadow-glow-sm hover:shadow-glow-md active:scale-[0.98]':
+              variant === 'gradient',
+            // Sizes
+            'px-2.5 py-1.5 text-xs': size === 'sm',
+            'px-4 py-2 text-sm': size === 'md',
+            'px-5 py-2.5 text-sm': size === 'lg',
+            // Disabled state
             'opacity-40 cursor-not-allowed pointer-events-none': disabled,
           },
           className

@@ -24,8 +24,9 @@ An AI-enhanced music publishing royalty management system with microservices arc
 ### Frontend
 - React 18, TypeScript, Vite
 - TailwindCSS
-- React Query
-- Zustand for state management
+- React Query, Zustand
+- Framer Motion (animations)
+- Recharts (data visualization)
 
 ## Quick Start
 
@@ -74,11 +75,15 @@ pnpm install
 
 # Start Admin Portal (Port 3000)
 pnpm run dev:admin
+
+# Start Songwriter Portal (Port 3001)
+cd apps/songwriter-portal && pnpm dev
 ```
 
 ### 5. Access the Application
 
 - **Admin Portal**: http://localhost:3000
+- **Songwriter Portal**: http://localhost:3001
 - **Auth Service API**: http://localhost:8001/docs
 - **Works Service API**: http://localhost:8002/docs
 - **Deals Service API**: http://localhost:8003/docs
@@ -157,11 +162,17 @@ make lint
 
 After running `make db-seed`:
 
+**Admin Portal:**
 | Email | Password | Role |
 |-------|----------|------|
 | admin@musicpub.com | password123 | admin |
 | manager@musicpub.com | password123 | manager |
-| songwriter1@email.com | password123 | songwriter |
+
+**Songwriter Portal:**
+| Email | Password | Songwriter |
+|-------|----------|------------|
+| songwriter1@email.com | password123 | John Smith (Johnny Beats) |
+| songwriter2@email.com | password123 | Sarah Johnson (S.J. Melody) |
 
 ## Implementation Phases
 
@@ -204,11 +215,22 @@ After running `make db-seed`:
   - Unmatched Queue for manual review
 - **Simulation Script** for end-to-end pipeline testing
 
-### Phase 4: Royalties (Pending)
-- Royalties Service
-- Calculation Engine
-- Statement PDF Generation
-- Songwriter Portal
+### Phase 4: Royalties & Songwriter Portal (Complete)
+- **Royalties Service** - Full royalty calculation and statement generation
+  - Period management (quarterly/monthly)
+  - Royalty calculation engine with configurable rates
+  - Statement generation with line-item breakdowns
+  - PDF statement generation and download
+  - Songwriter summary with earnings metrics
+- **Songwriter Portal** - Modern "Vibrant Studio" dark theme design
+  - Dark glassmorphism UI inspired by music streaming platforms
+  - Animated area charts with gradient fills (Recharts)
+  - Framer Motion page transitions and micro-animations
+  - Dashboard with earnings overview, charts, and top works
+  - Royalty statements list with status badges
+  - Statement detail view with earnings breakdown
+  - Works catalog with play counts and royalty totals
+  - Gradient accents, glow effects, and hover animations
 
 ### Phase 5: Polish (Pending)
 - AI Service consolidation

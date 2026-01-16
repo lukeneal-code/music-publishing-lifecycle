@@ -1,17 +1,33 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { DollarSign, Download, FileText, Calendar } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/auth';
 import { royaltiesApi } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Button } from '@/components/Button';
 
 const statusStyles: Record<string, string> = {
-  draft: 'bg-notion-gray-bg text-notion-gray-text',
-  calculated: 'bg-notion-blue-bg text-notion-blue-text',
-  approved: 'bg-notion-green-bg text-notion-green-text',
-  sent: 'bg-notion-purple-bg text-notion-purple-text',
-  paid: 'bg-notion-green-bg text-notion-green-text',
+  draft: 'status-draft',
+  calculated: 'status-calculated',
+  approved: 'status-approved',
+  sent: 'status-sent',
+  paid: 'status-paid',
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0 },
 };
 
 export function RoyaltiesPage() {
@@ -44,52 +60,58 @@ export function RoyaltiesPage() {
   const statements = statementsData?.items || [];
 
   return (
-    <div className="space-y-6">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6"
+    >
       {/* Header */}
-      <div className="flex items-start gap-3">
-        <div className="w-10 h-10 bg-notion-green-bg rounded-notion-md flex items-center justify-center flex-shrink-0">
-          <DollarSign className="w-5 h-5 text-notion-green-text" />
+      <motion.div variants={itemVariants} className="flex items-start gap-4">
+        <div className="w-12 h-12 gradient-success rounded-studio-md flex items-center justify-center flex-shrink-0 shadow-glow-emerald">
+          <DollarSign className="w-6 h-6 text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold text-notion-text">Royalty Statements</h1>
-          <p className="text-xs text-notion-text-secondary mt-0.5">
+          <h1 className="text-2xl font-semibold text-text-primary">Royalty Statements</h1>
+          <p className="text-sm text-text-secondary mt-1">
             View and download your royalty statements
           </p>
         </div>
-      </div>
+      </motion.div>
 
       {/* Statements List */}
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-20 bg-notion-bg-tertiary rounded-notion-md animate-pulse" />
+            <div key={i} className="h-24 bg-studio-surface rounded-studio-md shimmer" />
           ))}
         </div>
       ) : statements.length > 0 ? (
-        <div className="space-y-3">
+        <motion.div variants={containerVariants} className="space-y-3">
           {statements.map((statement) => (
-            <div
+            <motion.div
               key={statement.id}
+              variants={itemVariants}
               onClick={() => navigate(`/royalties/${statement.id}`)}
-              className="p-4 bg-notion-bg-secondary rounded-notion-md hover:bg-notion-bg-tertiary transition-colors cursor-pointer"
+              className="glass-card p-5 hover:bg-studio-surface-hover transition-all duration-200 cursor-pointer group glow-hover"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white rounded-notion-md flex items-center justify-center shadow-notion">
-                    <FileText className="w-6 h-6 text-notion-text-secondary" />
+                  <div className="w-14 h-14 bg-studio-surface-elevated rounded-studio-md flex items-center justify-center group-hover:shadow-glow-sm transition-shadow">
+                    <FileText className="w-7 h-7 text-text-secondary" />
                   </div>
                   <div>
-                    <div className="flex items-center gap-3 mb-1">
-                      <h3 className="text-sm font-semibold text-notion-text">
+                    <div className="flex items-center gap-3 mb-1.5">
+                      <h3 className="text-base font-semibold text-text-primary">
                         {statement.period?.period_code || 'Unknown Period'}
                       </h3>
-                      <span className={`tag text-[10px] ${statusStyles[statement.status] || statusStyles.draft}`}>
+                      <span className={`tag text-[11px] ${statusStyles[statement.status] || statusStyles.draft}`}>
                         {statement.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-notion-text-tertiary">
-                      <span className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
+                    <div className="flex items-center gap-4 text-xs text-text-tertiary">
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5" />
                         {statement.period ? (
                           <>
                             {formatDate(statement.period.start_date)} - {formatDate(statement.period.end_date)}
@@ -102,10 +124,10 @@ export function RoyaltiesPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
                   <div className="text-right">
-                    <p className="text-xs text-notion-text-tertiary">Net Payable</p>
-                    <p className="text-lg font-semibold text-notion-green-text">
+                    <p className="text-xs text-text-tertiary mb-0.5">Net Payable</p>
+                    <p className="text-xl font-bold text-gradient-success">
                       {formatCurrency(Number(statement.net_payable))}
                     </p>
                   </div>
@@ -114,25 +136,25 @@ export function RoyaltiesPage() {
                     variant="secondary"
                     onClick={(e) => handleDownloadPdf(statement.id, e)}
                   >
-                    <Download className="w-3.5 h-3.5 mr-1" />
+                    <Download className="w-3.5 h-3.5 mr-1.5" />
                     PDF
                   </Button>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       ) : (
-        <div className="text-center py-12">
-          <div className="w-16 h-16 bg-notion-bg-secondary rounded-notion-lg flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-8 h-8 text-notion-text-tertiary" />
+        <motion.div variants={itemVariants} className="text-center py-16">
+          <div className="w-20 h-20 bg-studio-surface rounded-studio-lg flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-10 h-10 text-text-tertiary" />
           </div>
-          <h3 className="text-sm font-semibold text-notion-text mb-1">No statements yet</h3>
-          <p className="text-xs text-notion-text-tertiary">
+          <h3 className="text-base font-semibold text-text-primary mb-2">No statements yet</h3>
+          <p className="text-sm text-text-tertiary">
             Your royalty statements will appear here once they're generated.
           </p>
-        </div>
+        </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
