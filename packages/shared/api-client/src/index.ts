@@ -17,4 +17,9 @@ export type {
   ManualMatchResponse,
   UsageStats,
   ListUnmatchedParams,
+  ListUsageEventsParams,
+  MatchInfo,
+  UsageEventDetail,
+  UsageEventsListResponse,
+  UsageKafkaIngestResponse,
 } from './usage';

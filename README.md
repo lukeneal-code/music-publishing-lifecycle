@@ -189,10 +189,20 @@ After running `make db-seed`:
   - Deal detail drawer with sign functionality
   - Contract generation integration
 
-### Phase 3: Usage Pipeline (Pending)
-- Kafka infrastructure
-- Usage Processor Worker
-- Matching Agent
+### Phase 3: Usage Pipeline (Complete)
+- **Kafka Infrastructure** - Running with Zookeeper and Kafka UI
+- **Usage Ingestion API** - Two ingestion endpoints:
+  - `POST /usage/ingest` - Direct DB insert (for testing)
+  - `POST /usage/ingest-kafka` - Publish to Kafka for full pipeline processing
+- **Usage Events API** - `GET /usage/events` with filtering by status, source, date range
+- **Usage Processor Worker** - Normalizes raw events, generates embeddings
+- **Matching Worker** - LangGraph agent with ISRC/ISWC/Fuzzy/Embedding matchers
+- **Admin Portal Usage Pages**:
+  - Usage Dashboard with stats and match rates
+  - Usage Events page with filtering and status badges
+  - Event Detail Drawer with match info and manual matching
+  - Unmatched Queue for manual review
+- **Simulation Script** for end-to-end pipeline testing
 
 ### Phase 4: Royalties (Pending)
 - Royalties Service
@@ -204,3 +214,62 @@ After running `make db-seed`:
 - AI Service consolidation
 - Notification Worker
 - Performance optimization
+
+---
+
+## Usage Pipeline
+
+### Testing the Pipeline
+
+1. **Start all services**:
+   ```bash
+   docker-compose -f docker-compose.dev.yml up -d
+   ```
+
+2. **Simulate usage data** (publishes to Kafka):
+   ```bash
+   # Install script dependencies
+   pip install aiokafka asyncpg
+
+   # Generate 100 Spotify events (mix of matchable/unmatchable)
+   python scripts/simulate_usage.py --count 100 --source spotify --include-unmatchable
+
+   # Generate mixed source events
+   python scripts/simulate_usage.py --count 50 --mixed --include-unmatchable
+
+   # Dry run to preview events
+   python scripts/simulate_usage.py --count 10 --dry-run
+   ```
+
+3. **Monitor the pipeline**:
+   - **Kafka UI**: http://localhost:8080 - View messages in raw/normalized/matched topics
+   - **Worker logs**: `docker-compose logs -f usage-processor matching-worker`
+   - **Admin Portal**: http://localhost:3000/usage/events - View processing status
+
+4. **API Endpoints**:
+   ```bash
+   # Ingest via Kafka (full pipeline)
+   curl -X POST http://localhost:8005/usage/ingest-kafka \
+     -H "Content-Type: application/json" \
+     -d '{"source": "spotify", "events": [{"title": "Test Song", "artist": "Test Artist", "usage_date": "2024-01-15", "play_count": 100}]}'
+
+   # List events with filters
+   curl "http://localhost:8005/usage/events?status=matched&source=spotify&limit=10"
+
+   # Get usage stats
+   curl http://localhost:8005/usage/stats
+   ```
+
+### Kafka Topics
+
+| Topic | Description |
+|-------|-------------|
+| `usage.raw.spotify` | Raw Spotify streaming data |
+| `usage.raw.apple_music` | Raw Apple Music streaming data |
+| `usage.raw.radio` | Raw radio airplay data |
+| `usage.raw.generic` | Raw data from other sources |
+| `usage.normalized` | Normalized events ready for matching |
+| `usage.matched` | Successfully matched events |
+| `usage.unmatched` | Events requiring manual review |
+| `dlq.usage.processing` | Dead letter queue for processing errors |
+| `dlq.matching` | Dead letter queue for matching errors |

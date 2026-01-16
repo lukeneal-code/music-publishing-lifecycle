@@ -263,6 +263,12 @@ var UsageApi = class {
   async ingestUsage(request) {
     return this.client.post("usage/ingest", request);
   }
+  async ingestUsageKafka(request) {
+    return this.client.post("usage/ingest-kafka", request);
+  }
+  async listUsageEvents(params) {
+    return this.client.get("usage/events", params);
+  }
   async listUnmatched(params) {
     return this.client.get("usage/unmatched", params);
   }

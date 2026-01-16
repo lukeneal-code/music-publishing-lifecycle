@@ -80,11 +80,61 @@ export interface ListUnmatchedParams {
   territory?: string;
 }
 
+export interface ListUsageEventsParams {
+  skip?: number;
+  limit?: number;
+  status?: 'pending' | 'processing' | 'matched' | 'unmatched' | 'error';
+  source?: string;
+  start_date?: string;
+  end_date?: string;
+}
+
+export interface MatchInfo {
+  work_id: string;
+  work_title: string;
+  recording_id?: string;
+  match_confidence: number;
+  match_method: string;
+  is_confirmed: boolean;
+  matched_at?: string;
+}
+
+export interface UsageEventDetail extends UsageEvent {
+  source_event_id?: string;
+  reported_album?: string;
+  currency?: string;
+  reporting_period?: string;
+  processed_at?: string;
+  match_info?: MatchInfo;
+}
+
+export interface UsageEventsListResponse {
+  items: UsageEventDetail[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
+export interface UsageKafkaIngestResponse {
+  message: string;
+  events_received: number;
+  events_published: number;
+  topic: string;
+}
+
 export class UsageApi {
   constructor(private client: ApiClient) {}
 
   async ingestUsage(request: UsageIngestRequest): Promise<UsageIngestResponse> {
     return this.client.post<UsageIngestResponse>('usage/ingest', request);
+  }
+
+  async ingestUsageKafka(request: UsageIngestRequest): Promise<UsageKafkaIngestResponse> {
+    return this.client.post<UsageKafkaIngestResponse>('usage/ingest-kafka', request);
+  }
+
+  async listUsageEvents(params?: ListUsageEventsParams): Promise<UsageEventsListResponse> {
+    return this.client.get<UsageEventsListResponse>('usage/events', params);
   }
 
   async listUnmatched(params?: ListUnmatchedParams): Promise<UnmatchedListResponse> {

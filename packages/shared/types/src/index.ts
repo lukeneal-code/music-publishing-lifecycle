@@ -390,6 +390,32 @@ export interface MatchedUsage {
   recording?: Recording;
 }
 
+export interface MatchInfo {
+  work_id: string;
+  work_title: string;
+  recording_id?: string;
+  match_confidence: number;
+  match_method: string;
+  is_confirmed: boolean;
+  matched_at?: string;
+}
+
+export interface UsageEventDetail extends UsageEvent {
+  source_event_id?: string;
+  reported_album?: string;
+  currency?: string;
+  reporting_period?: string;
+  processed_at?: string;
+  match_info?: MatchInfo;
+}
+
+export interface UsageEventsListResponse {
+  items: UsageEventDetail[];
+  total: number;
+  skip: number;
+  limit: number;
+}
+
 // ============================================
 // API Response Types
 // ============================================

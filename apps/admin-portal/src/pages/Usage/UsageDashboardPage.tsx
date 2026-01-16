@@ -60,14 +60,24 @@ export function UsageDashboardPage() {
             Monitor usage data ingestion and matching status
           </p>
         </div>
-        <Link
-          to="/usage/unmatched"
-          className="flex items-center gap-2 px-4 py-2 bg-notion-blue-bg text-notion-blue-text rounded-notion text-sm font-medium hover:opacity-80 transition-opacity"
-        >
-          <AlertCircle className="w-4 h-4" />
-          Review Unmatched
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            to="/usage/events"
+            className="flex items-center gap-2 px-4 py-2 bg-notion-gray-bg text-notion-text-secondary rounded-notion text-sm font-medium hover:bg-notion-bg-hover transition-colors"
+          >
+            <Music className="w-4 h-4" />
+            All Events
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+          <Link
+            to="/usage/unmatched"
+            className="flex items-center gap-2 px-4 py-2 bg-notion-blue-bg text-notion-blue-text rounded-notion text-sm font-medium hover:opacity-80 transition-opacity"
+          >
+            <AlertCircle className="w-4 h-4" />
+            Review Unmatched
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}

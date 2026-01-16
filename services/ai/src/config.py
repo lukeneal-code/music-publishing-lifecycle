@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     # Service URLs
     deals_service_url: str = "http://deals-service:8003"
 
+    # Kafka
+    kafka_brokers: str = "kafka:9092"
+
     # CORS
     cors_origins: list[str] = ["http://localhost:3000", "http://localhost:3001"]
 

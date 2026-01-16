@@ -206,14 +206,53 @@ interface ListUnmatchedParams {
     source?: string;
     territory?: string;
 }
+interface ListUsageEventsParams {
+    skip?: number;
+    limit?: number;
+    status?: 'pending' | 'processing' | 'matched' | 'unmatched' | 'error';
+    source?: string;
+    start_date?: string;
+    end_date?: string;
+}
+interface MatchInfo {
+    work_id: string;
+    work_title: string;
+    recording_id?: string;
+    match_confidence: number;
+    match_method: string;
+    is_confirmed: boolean;
+    matched_at?: string;
+}
+interface UsageEventDetail extends UsageEvent {
+    source_event_id?: string;
+    reported_album?: string;
+    currency?: string;
+    reporting_period?: string;
+    processed_at?: string;
+    match_info?: MatchInfo;
+}
+interface UsageEventsListResponse {
+    items: UsageEventDetail[];
+    total: number;
+    skip: number;
+    limit: number;
+}
+interface UsageKafkaIngestResponse {
+    message: string;
+    events_received: number;
+    events_published: number;
+    topic: string;
+}
 declare class UsageApi {
     private client;
     constructor(client: ApiClient);
     ingestUsage(request: UsageIngestRequest): Promise<UsageIngestResponse>;
+    ingestUsageKafka(request: UsageIngestRequest): Promise<UsageKafkaIngestResponse>;
+    listUsageEvents(params?: ListUsageEventsParams): Promise<UsageEventsListResponse>;
     listUnmatched(params?: ListUnmatchedParams): Promise<UnmatchedListResponse>;
     getUsageEvent(eventId: string): Promise<UsageEvent>;
     manualMatch(request: ManualMatchRequest): Promise<ManualMatchResponse>;
     getStats(): Promise<UsageStats>;
 }
 
-export { ApiClient, type ApiClientConfig, AuthApi, DealsApi, type ListUnmatchedParams, type ManualMatchRequest, type ManualMatchResponse, type RawUsageEvent, RoyaltiesApi, type UnmatchedListResponse, UsageApi, type UsageEvent, type UsageIngestRequest, type UsageIngestResponse, type UsageStats, WorksApi, createApiClient };
+export { ApiClient, type ApiClientConfig, AuthApi, DealsApi, type ListUnmatchedParams, type ListUsageEventsParams, type ManualMatchRequest, type ManualMatchResponse, type MatchInfo, type RawUsageEvent, RoyaltiesApi, type UnmatchedListResponse, UsageApi, type UsageEvent, type UsageEventDetail, type UsageEventsListResponse, type UsageIngestRequest, type UsageIngestResponse, type UsageKafkaIngestResponse, type UsageStats, WorksApi, createApiClient };

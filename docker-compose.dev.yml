@@ -215,12 +215,15 @@ services:
     environment:
       DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
       REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:29092
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       DEALS_SERVICE_URL: http://deals-service:8003
       ENVIRONMENT: development
       DEBUG: "true"
     depends_on:
       postgres:
+        condition: service_healthy
+      kafka:
         condition: service_healthy
     volumes:
       - ./services/ai/src:/app/src:ro
@@ -234,8 +237,8 @@ services:
   # Usage Processor Worker
   usage-processor:
     build:
-      context: ./services/workers/usage_processor
-      dockerfile: Dockerfile
+      context: ./services/workers
+      dockerfile: usage_processor/Dockerfile
     environment:
       DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
       KAFKA_BROKERS: kafka:29092
@@ -249,14 +252,15 @@ services:
         condition: service_healthy
     volumes:
       - ./services/workers/usage_processor/src:/app/src:ro
+      - ./services/workers/shared:/app/shared:ro
     networks:
       - musicpub-network
 
   # Matching Worker
   matching-worker:
     build:
-      context: ./services/workers/matching_worker
-      dockerfile: Dockerfile
+      context: ./services/workers
+      dockerfile: matching_worker/Dockerfile
     environment:
       DATABASE_URL: postgresql://musicpub:musicpub_dev@postgres:5432/musicpub
       KAFKA_BROKERS: kafka:29092
@@ -273,6 +277,7 @@ services:
         condition: service_started
     volumes:
       - ./services/workers/matching_worker/src:/app/src:ro
+      - ./services/workers/shared:/app/shared:ro
     networks:
       - musicpub-network
 

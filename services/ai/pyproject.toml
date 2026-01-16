@@ -21,6 +21,7 @@ dependencies = [
     "langchain>=0.1.0",
     "langchain-openai>=0.0.5",
     "pgvector>=0.2.4",
+    "aiokafka>=0.10.0",
 ]
 
 [tool.setuptools.packages.find]
