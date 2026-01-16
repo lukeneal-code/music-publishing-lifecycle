@@ -295,6 +295,13 @@ var RoyaltiesApi = class {
   async getTopPerformingWorks(songwriterId, limit) {
     return this.client.get(`/songwriters/${songwriterId}/works/top`, { limit });
   }
+  // Songwriters
+  async listSongwriters(params) {
+    return this.client.get("/songwriters", params);
+  }
+  async getSongwriter(id) {
+    return this.client.get(`/songwriters/${id}`);
+  }
 };
 
 // src/usage.ts

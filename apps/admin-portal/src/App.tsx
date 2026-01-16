@@ -4,6 +4,8 @@ import { DashboardPage } from '@/pages/Dashboard/DashboardPage';
 import { WorksPage } from '@/pages/Works/WorksPage';
 import { DealsPage } from '@/pages/Deals/DealsPage';
 import { UsageDashboardPage, UnmatchedQueuePage, UsageEventsPage } from '@/pages/Usage';
+import { RoyaltiesPage } from '@/pages/Royalties';
+import { SongwritersPage } from '@/pages/Songwriters';
 
 function App() {
   return (
@@ -16,8 +18,8 @@ function App() {
         <Route path="usage" element={<UsageDashboardPage />} />
         <Route path="usage/events" element={<UsageEventsPage />} />
         <Route path="usage/unmatched" element={<UnmatchedQueuePage />} />
-        <Route path="royalties" element={<div className="p-6">Royalties - Coming Soon</div>} />
-        <Route path="songwriters" element={<div className="p-6">Songwriters - Coming Soon</div>} />
+        <Route path="royalties" element={<RoyaltiesPage />} />
+        <Route path="songwriters" element={<SongwritersPage />} />
         <Route path="settings" element={<div className="p-6">Settings - Coming Soon</div>} />
       </Route>
     </Routes>

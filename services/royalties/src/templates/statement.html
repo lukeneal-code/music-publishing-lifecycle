@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royalty Statement - {{ statement.songwriter.legal_name if statement.songwriter else 'Unknown' }}</title>
+    <style>
+        @page {
+            size: letter;
+            margin: 0.75in;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #1a1a1a;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .company-info h1 {
+            font-size: 18pt;
+            font-weight: 700;
+            color: #2563eb;
+            margin-bottom: 5px;
+        }
+
+        .company-info p {
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .statement-info {
+            text-align: right;
+        }
+
+        .statement-info h2 {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .statement-info p {
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .recipient {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .recipient h3 {
+            font-size: 8pt;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .recipient .name {
+            font-size: 14pt;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 5px;
+        }
+
+        .recipient .details {
+            font-size: 9pt;
+            color: #666;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .summary-card.highlight {
+            background: #2563eb;
+            color: white;
+        }
+
+        .summary-card label {
+            display: block;
+            font-size: 8pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        .summary-card .value {
+            font-size: 14pt;
+            font-weight: 700;
+        }
+
+        .summary-card.highlight label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section h3 {
+            font-size: 10pt;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9pt;
+        }
+
+        th {
+            background: #f8fafc;
+            text-align: left;
+            padding: 10px 12px;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th.right, td.right {
+            text-align: right;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #4b5563;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .totals-table {
+            width: 300px;
+            margin-left: auto;
+            margin-top: 20px;
+        }
+
+        .totals-table td {
+            padding: 8px 12px;
+        }
+
+        .totals-table tr.total td {
+            font-weight: 700;
+            font-size: 11pt;
+            border-top: 2px solid #1a1a1a;
+            padding-top: 12px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .footer h4 {
+            font-size: 9pt;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .footer p {
+            font-size: 8pt;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 8pt;
+            font-weight: 500;
+        }
+
+        .tag-stream { background: #dbeafe; color: #1e40af; }
+        .tag-download { background: #dcfce7; color: #166534; }
+        .tag-radio { background: #fef3c7; color: #92400e; }
+        .tag-sync { background: #f3e8ff; color: #6b21a8; }
+        .tag-default { background: #f3f4f6; color: #374151; }
+
+        .page-break {
+            page-break-before: always;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="company-info">
+            <h1>{{ company_name }}</h1>
+            <p>{{ company_address }}</p>
+            <p>{{ company_email }}</p>
+        </div>
+        <div class="statement-info">
+            <h2>Royalty Statement</h2>
+            <p><strong>Period:</strong> {{ statement.period.period_code if statement.period else 'N/A' }}</p>
+            <p><strong>{{ statement.period.start_date|date }} - {{ statement.period.end_date|date }}</strong></p>
+            <p><strong>Generated:</strong> {{ generated_at|date }}</p>
+        </div>
+    </div>
+
+    <!-- Recipient -->
+    <div class="recipient">
+        <h3>Payee Information</h3>
+        <div class="name">{{ statement.songwriter.legal_name if statement.songwriter else 'Unknown' }}</div>
+        <div class="details">
+            {% if statement.songwriter %}
+                {% if statement.songwriter.stage_name %}Stage Name: {{ statement.songwriter.stage_name }}<br>{% endif %}
+                {% if statement.songwriter.ipi_number %}IPI: {{ statement.songwriter.ipi_number }}<br>{% endif %}
+                {% if statement.songwriter.pro_affiliation %}PRO: {{ statement.songwriter.pro_affiliation }}{% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="summary-grid">
+        <div class="summary-card">
+            <label>Gross Royalties</label>
+            <div class="value">{{ statement.gross_royalties|currency }}</div>
+        </div>
+        <div class="summary-card">
+            <label>Writer Share</label>
+            <div class="value">{{ statement.writer_share|currency }}</div>
+        </div>
+        <div class="summary-card">
+            <label>Deductions</label>
+            <div class="value">{{ (statement.advance_recoupment + statement.withholding_tax + statement.other_deductions)|currency }}</div>
+        </div>
+        <div class="summary-card highlight">
+            <label>Net Payable</label>
+            <div class="value">{{ statement.net_payable|currency }}</div>
+        </div>
+    </div>
+
+    <!-- Usage Summary by Type -->
+    <div class="section">
+        <h3>Earnings by Usage Type</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Usage Type</th>
+                    <th class="right">Plays/Uses</th>
+                    <th class="right">Gross Revenue</th>
+                    <th class="right">Your Royalty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usage_type, data in usage_summary.items() %}
+                <tr>
+                    <td>
+                        <span class="tag tag-{% if usage_type == 'stream' %}stream{% elif usage_type == 'download' %}download{% elif usage_type == 'radio_play' %}radio{% elif usage_type == 'sync' %}sync{% else %}default{% endif %}">
+                            {{ usage_type.replace('_', ' ').title() }}
+                        </span>
+                    </td>
+                    <td class="right">{{ data.count|number }}</td>
+                    <td class="right">{{ data.revenue|currency }}</td>
+                    <td class="right">{{ data.royalty|currency }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Detailed Line Items -->
+    <div class="section">
+        <h3>Detailed Breakdown by Work</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Work</th>
+                    <th>Type</th>
+                    <th>Territory</th>
+                    <th>Source</th>
+                    <th class="right">Plays</th>
+                    <th class="right">Revenue</th>
+                    <th class="right">Royalty</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in line_items %}
+                <tr>
+                    <td>
+                        <strong>{{ item.work.title if item.work else 'Unknown Work' }}</strong>
+                        {% if item.work and item.work.iswc %}<br><small style="color: #666;">{{ item.work.iswc }}</small>{% endif %}
+                    </td>
+                    <td>
+                        <span class="tag tag-{% if item.usage_type == 'stream' %}stream{% elif item.usage_type == 'download' %}download{% elif item.usage_type == 'radio_play' %}radio{% elif item.usage_type == 'sync' %}sync{% else %}default{% endif %}">
+                            {{ item.usage_type.replace('_', ' ').title() }}
+                        </span>
+                    </td>
+                    <td>{{ item.territory or 'WORLD' }}</td>
+                    <td>{{ item.source or '-' }}</td>
+                    <td class="right">{{ item.usage_count|number }}</td>
+                    <td class="right">{{ item.gross_revenue|currency }}</td>
+                    <td class="right">{{ item.calculated_royalty|currency }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Totals -->
+    <table class="totals-table">
+        <tr>
+            <td>Gross Royalties</td>
+            <td class="right">{{ statement.gross_royalties|currency }}</td>
+        </tr>
+        <tr>
+            <td>Publisher Share</td>
+            <td class="right">({{ statement.publisher_share|currency }})</td>
+        </tr>
+        <tr>
+            <td>Writer Share</td>
+            <td class="right">{{ statement.writer_share|currency }}</td>
+        </tr>
+        {% if statement.advance_recoupment > 0 %}
+        <tr>
+            <td>Advance Recoupment</td>
+            <td class="right">({{ statement.advance_recoupment|currency }})</td>
+        </tr>
+        {% endif %}
+        {% if statement.withholding_tax > 0 %}
+        <tr>
+            <td>Withholding Tax</td>
+            <td class="right">({{ statement.withholding_tax|currency }})</td>
+        </tr>
+        {% endif %}
+        {% if statement.other_deductions > 0 %}
+        <tr>
+            <td>Other Deductions</td>
+            <td class="right">({{ statement.other_deductions|currency }})</td>
+        </tr>
+        {% endif %}
+        <tr class="total">
+            <td>Net Payable</td>
+            <td class="right">{{ statement.net_payable|currency }}</td>
+        </tr>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-grid">
+            <div>
+                <h4>Payment Information</h4>
+                <p>
+                    Payment will be processed within 30 days of the statement date.
+                    Please ensure your banking information is up to date in your account settings.
+                    For payment inquiries, contact {{ company_email }}.
+                </p>
+            </div>
+            <div>
+                <h4>Questions?</h4>
+                <p>
+                    If you have questions about this statement or believe there are discrepancies,
+                    please contact us within 60 days of the statement date.
+                    Include your statement period and specific line items in question.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

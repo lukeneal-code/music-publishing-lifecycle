@@ -4,6 +4,7 @@ import type {
   RoyaltyLineItem,
   RoyaltySummary,
   TopPerformingWork,
+  Songwriter,
   UUID,
   PaginatedResponse,
 } from '@musicpub/types';
@@ -21,6 +22,12 @@ export interface ListStatementsParams {
   status?: string;
   songwriter_id?: UUID;
   period_id?: UUID;
+}
+
+export interface ListSongwritersParams {
+  skip?: number;
+  limit?: number;
+  search?: string;
 }
 
 export class RoyaltiesApi {
@@ -78,5 +85,14 @@ export class RoyaltiesApi {
 
   async getTopPerformingWorks(songwriterId: UUID, limit?: number): Promise<TopPerformingWork[]> {
     return this.client.get<TopPerformingWork[]>(`/songwriters/${songwriterId}/works/top`, { limit });
+  }
+
+  // Songwriters
+  async listSongwriters(params?: ListSongwritersParams): Promise<Songwriter[]> {
+    return this.client.get<Songwriter[]>('/songwriters', params);
+  }
+
+  async getSongwriter(id: UUID): Promise<Songwriter> {
+    return this.client.get<Songwriter>(`/songwriters/${id}`);
   }
 }

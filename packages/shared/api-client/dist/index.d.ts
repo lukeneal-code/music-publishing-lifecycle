@@ -116,6 +116,11 @@ interface ListStatementsParams {
     songwriter_id?: UUID;
     period_id?: UUID;
 }
+interface ListSongwritersParams {
+    skip?: number;
+    limit?: number;
+    search?: string;
+}
 declare class RoyaltiesApi {
     private client;
     constructor(client: ApiClient);
@@ -134,6 +139,8 @@ declare class RoyaltiesApi {
     getSongwriterRoyalties(songwriterId: UUID): Promise<PaginatedResponse<RoyaltyStatement>>;
     getSongwriterSummary(songwriterId: UUID): Promise<RoyaltySummary>;
     getTopPerformingWorks(songwriterId: UUID, limit?: number): Promise<TopPerformingWork[]>;
+    listSongwriters(params?: ListSongwritersParams): Promise<Songwriter[]>;
+    getSongwriter(id: UUID): Promise<Songwriter>;
 }
 
 interface RawUsageEvent {

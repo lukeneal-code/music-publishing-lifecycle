@@ -324,6 +324,7 @@ export interface RoyaltyStatement {
   updated_at: string;
   period?: RoyaltyPeriod;
   songwriter?: Songwriter;
+  line_items_count?: number;
 }
 
 export interface RoyaltyLineItem {
@@ -401,11 +402,6 @@ export interface MatchInfo {
 }
 
 export interface UsageEventDetail extends UsageEvent {
-  source_event_id?: string;
-  reported_album?: string;
-  currency?: string;
-  reporting_period?: string;
-  processed_at?: string;
   match_info?: MatchInfo;
 }
 

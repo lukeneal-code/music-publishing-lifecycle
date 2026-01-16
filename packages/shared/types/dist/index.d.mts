@@ -168,9 +168,21 @@ interface Deal {
     term_months?: number;
     territories: string[];
     rights_granted: string[];
+    signed_at?: string;
     created_at: string;
     updated_at: string;
     songwriter?: Songwriter;
+    works_count?: number;
+}
+interface DealWork {
+    id: UUID;
+    deal_id: UUID;
+    work_id: UUID;
+    created_at: string;
+    work?: Work;
+}
+interface DealWithDetails extends Deal {
+    works: DealWork[];
 }
 interface DealCreate {
     deal_number: string;
@@ -225,6 +237,7 @@ interface RoyaltyStatement {
     updated_at: string;
     period?: RoyaltyPeriod;
     songwriter?: Songwriter;
+    line_items_count?: number;
 }
 interface RoyaltyLineItem {
     id: UUID;
@@ -289,6 +302,24 @@ interface MatchedUsage {
     work?: Work;
     recording?: Recording;
 }
+interface MatchInfo {
+    work_id: string;
+    work_title: string;
+    recording_id?: string;
+    match_confidence: number;
+    match_method: string;
+    is_confirmed: boolean;
+    matched_at?: string;
+}
+interface UsageEventDetail extends UsageEvent {
+    match_info?: MatchInfo;
+}
+interface UsageEventsListResponse {
+    items: UsageEventDetail[];
+    total: number;
+    skip: number;
+    limit: number;
+}
 interface PaginatedResponse<T> {
     items: T[];
     total: number;
@@ -309,4 +340,4 @@ interface TopPerformingWork extends Work {
     total_royalties: number;
 }
 
-export type { Address, ApiError, Deal, DealCreate, DealStatus, DealType, DealUpdate, LoginRequest, LoginResponse, MatchMethod, MatchedUsage, PaginatedResponse, Recording, RecordingCreate, RecordingUpdate, RegisterRequest, RoyaltyLineItem, RoyaltyPeriod, RoyaltyPeriodStatus, RoyaltyStatement, RoyaltySummary, SimilarSearchRequest, Songwriter, StatementStatus, TokenRefreshRequest, TokenRefreshResponse, TopPerformingWork, UUID, UsageEvent, UsageType, User, UserRole, Work, WorkCreate, WorkListResponse, WorkStatus, WorkUpdate, WorkWithDetails, WorkWriter, WorkWriterCreate, WriterRole };
+export type { Address, ApiError, Deal, DealCreate, DealStatus, DealType, DealUpdate, DealWithDetails, DealWork, LoginRequest, LoginResponse, MatchInfo, MatchMethod, MatchedUsage, PaginatedResponse, Recording, RecordingCreate, RecordingUpdate, RegisterRequest, RoyaltyLineItem, RoyaltyPeriod, RoyaltyPeriodStatus, RoyaltyStatement, RoyaltySummary, SimilarSearchRequest, Songwriter, StatementStatus, TokenRefreshRequest, TokenRefreshResponse, TopPerformingWork, UUID, UsageEvent, UsageEventDetail, UsageEventsListResponse, UsageType, User, UserRole, Work, WorkCreate, WorkListResponse, WorkStatus, WorkUpdate, WorkWithDetails, WorkWriter, WorkWriterCreate, WriterRole };
